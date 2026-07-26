@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   Ma2bool.ai Design System — Tailwind v4 theme tokens
+   ───────────────────────────────────────────────────────────── */
+
+@theme inline {
+  /* Fonts */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  /* Colors */
+  --color-bg-base: #0A0A0F;
+  --color-surface: #13131A;
+  --color-surface-2: #1C1C28;
+
+  --color-accent-green: #00FF88;
+  --color-accent-purple: #9B59FF;
+
+  --color-text-primary: #F0F0F5;
+  --color-text-muted: #6B7280;
+
+  --color-muted: #6B7280;
+
+  /* Border radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+
+  /* Keyframes */
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Animation utilities */
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 8s linear infinite;
+}
+
+/* ─── Base ──────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Custom scrollbar ──────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 136, 0.25);
+}
+
+/* ─── Selection ─────────────────────────────────────────────── */
+
+::selection {
+  background: rgba(0, 255, 136, 0.2);
+  color: #f0f0f5;
+}
+
+/* ─── Focus ring reset ──────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-green);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ─── Three.js Canvas Fix ────────────────────────────────────── */
+
+/* إجبار عنصر الـ Canvas إنه يملى المساحة بالكامل وما ينكمشش */
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
