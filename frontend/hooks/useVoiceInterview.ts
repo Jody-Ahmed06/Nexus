@@ -42,7 +42,7 @@ function pickVoice(): SpeechSynthesisVoice | null {
     voices.find(
       (v) =>
         v.lang.startsWith("en") &&
-        /zira|samantha|karen|moira|victoria|susan|female/i.test(v.name)
+        /david|mark|george|alex|james|male/i.test(v.name)
     ) ||
     voices.find((v) => v.lang === "en-US") ||
     voices.find((v) => v.lang.startsWith("en")) ||
@@ -153,7 +153,7 @@ export function useVoiceInterview(): UseVoiceInterviewReturn {
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 0.9;
-      utterance.pitch = 1.05;
+      utterance.pitch = 0.95; // درجة صوت رجالية
       utterance.volume = 1;
       const voice = pickVoice();
       if (voice) utterance.voice = voice;

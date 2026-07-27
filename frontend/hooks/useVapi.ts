@@ -1,11 +1,5 @@
 /**
  * useVapi — Vapi Web SDK hook with automatic mock-mode fallback.
- *
- * LIVE MODE:  Set NEXT_PUBLIC_VAPI_KEY in .env.local → real AI calls.
- * MOCK MODE:  No key? Uses the browser's built-in speechSynthesis API to
- *             actually speak the questions out loud, so the full interview
- *             flow (voice + orb animation + eye tracking) works with zero
- *             API keys or internet quota.
  */
 "use client";
 
@@ -20,19 +14,12 @@ export interface VapiMessage {
 }
 
 export interface UseVapiReturn {
-  /** Call to start the interview session */
   start: (systemPrompt: string) => Promise<void>;
-  /** Call to end the interview session */
   stop: () => void;
-  /** True while the AI is currently speaking */
   isSpeaking: boolean;
-  /** 0.0–1.0 volume level of the AI voice */
   volumeLevel: number;
-  /** Whether a session is actively running */
   isActive: boolean;
-  /** Whether we're in simulated mock mode */
   isMockMode: boolean;
-  /** Transcript messages accumulated during the call */
   messages: VapiMessage[];
 }
 
@@ -48,11 +35,11 @@ const MOCK_SCRIPTS = [
 
 function getEnglishVoice(): SpeechSynthesisVoice | null {
   const voices = window.speechSynthesis.getVoices();
-  // Prefer a named female voice for a natural "Alex" interviewer feel
+  // البحث عن أصوات رجالي في المتصفح
   return (
     voices.find((v) =>
       v.lang.startsWith("en") &&
-      /zira|samantha|karen|moira|victoria|susan|female/i.test(v.name)
+      /david|mark|george|alex|james|male/i.test(v.name)
     ) ||
     voices.find((v) => v.lang === "en-US") ||
     voices.find((v) => v.lang.startsWith("en")) ||
@@ -67,7 +54,6 @@ function useMockVapi(): UseVapiReturn {
   const [isActive, setIsActive] = useState(false);
   const [messages, setMessages] = useState<VapiMessage[]>([]);
 
-  // Refs so callbacks always read latest value without stale closures
   const isActiveRef = useRef(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -79,7 +65,7 @@ function useMockVapi(): UseVapiReturn {
     const text = MOCK_SCRIPTS[index];
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.9;
-    utterance.pitch = 1.05;
+    utterance.pitch = 0.95; // تنزيل درجة الصوت قليلاً ليكون رجالي
     utterance.volume = 1;
 
     const voice = getEnglishVoice();
@@ -91,7 +77,6 @@ function useMockVapi(): UseVapiReturn {
         ...prev,
         { role: "assistant", content: text, timestamp: Date.now() },
       ]);
-      // Animate volume while speaking
       intervalRef.current = setInterval(() => {
         setVolumeLevel(0.3 + Math.random() * 0.7);
       }, 100);
@@ -101,7 +86,6 @@ function useMockVapi(): UseVapiReturn {
       clearInterval(intervalRef.current!);
       setIsSpeaking(false);
       setVolumeLevel(0);
-      // Wait 8 s for the user to answer, then ask the next question
       timeoutRef.current = setTimeout(() => {
         speakQuestion(index + 1);
       }, 8000);
@@ -114,9 +98,9 @@ function useMockVapi(): UseVapiReturn {
       setVolumeLevel(0);
     };
 
-    window.speechSynthesis.cancel(); // clear any queued utterances
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const start = useCallback(
     async (_systemPrompt: string) => {
@@ -125,11 +109,9 @@ function useMockVapi(): UseVapiReturn {
       setMessages([]);
 
       const begin = () => {
-        // Short greeting pause before first question
         timeoutRef.current = setTimeout(() => speakQuestion(0), 1200);
       };
 
-      // Chrome loads voices asynchronously — wait if not ready yet
       if (window.speechSynthesis.getVoices().length > 0) {
         begin();
       } else {
@@ -151,7 +133,6 @@ function useMockVapi(): UseVapiReturn {
     setVolumeLevel(0);
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       isActiveRef.current = false;
@@ -228,8 +209,8 @@ function useLiveVapi(apiKey: string): UseVapiReturn {
         messages: [{ role: "system", content: systemPrompt }],
       },
       voice: {
-        provider: "playht",
-        voiceId: "jennifer",
+        provider: "openai",
+        voiceId: "echo",
       },
       transcriber: {
         provider: "deepgram",
@@ -252,7 +233,6 @@ function useLiveVapi(apiKey: string): UseVapiReturn {
 export function useVapi(): UseVapiReturn {
   const apiKey = process.env.NEXT_PUBLIC_VAPI_KEY;
 
-  // Always call both hooks unconditionally (React rules of hooks).
   const mockResult = useMockVapi();
   const liveResult = useLiveVapi(apiKey ?? "");
 

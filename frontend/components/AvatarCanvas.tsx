@@ -7,13 +7,13 @@ import { Avatar } from "./Avatar";
 
 interface AvatarCanvasProps {
   isSpeaking?: boolean;
+  volumeLevel?: number;
 }
 
-export function AvatarCanvas({ isSpeaking = false }: AvatarCanvasProps) {
+export function AvatarCanvas({ isSpeaking = false, volumeLevel = 0 }: AvatarCanvasProps) {
   return (
     <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", overflow: "hidden" }}>
       <Canvas
-        // الكاميرا اتأخرت لورا شوية عشان الشعر والراس يبانوا كاملين
         camera={{ position: [0, 1.4, 1.6], fov: 40 }}
         style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }}
         dpr={[1, 2]}
@@ -24,7 +24,7 @@ export function AvatarCanvas({ isSpeaking = false }: AvatarCanvasProps) {
         <Environment preset="city" />
 
         <Suspense fallback={null}>
-          <Avatar isSpeaking={isSpeaking} />
+          <Avatar isSpeaking={isSpeaking} volumeLevel={volumeLevel} />
           <ContactShadows position={[0, -1.4, 0]} blur={2} far={4} opacity={0.4} scale={4} />
         </Suspense>
 

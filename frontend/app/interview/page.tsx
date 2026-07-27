@@ -147,8 +147,11 @@ export default function InterviewPage() {
           {/* Render the 3D Avatar as the main visual - Adjusted width/height & rounded corners for full oval fill */}
           <div style={{ width: '380px', height: '520px', minWidth: '380px', minHeight: '520px', borderRadius: '190px', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.3)', position: 'relative', backgroundColor: 'rgba(0,0,0,0.2)', boxShadow: '0 0 80px rgba(0,255,136,0.1)' }}>
 
-            {/* هنا التعديل اللي ضفناه 👇 */}
-            <AvatarCanvas isSpeaking={interview.status === "speaking"} />
+            {/* تم تحديث هذا السطر ليمرر حالة الكلام ومستوى الصوت معاً */}
+            <AvatarCanvas
+              isSpeaking={interview.status === "speaking"}
+              volumeLevel={(interview as any).volumeLevel}
+            />
 
           </div>
 
