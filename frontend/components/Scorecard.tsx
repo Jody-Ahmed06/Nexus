@@ -57,7 +57,7 @@ function CustomTooltip({ active, payload }: any) {
 
 export function Scorecard({ feedback, eyeContactPercent, onRetake }: ScorecardProps) {
   const { toast } = useToast();
-  
+
   const storeEyeContactPercent = useInterviewStore((state) => state.eyeContactPercent);
   const finalEyeContactPercent = storeEyeContactPercent > 0 ? storeEyeContactPercent : eyeContactPercent;
 
@@ -70,19 +70,15 @@ export function Scorecard({ feedback, eyeContactPercent, onRetake }: ScorecardPr
   ];
 
   const handleDownloadPDF = () => {
-    toast(
-      "💎 Premium Feature: PDF Reports are available in the enterprise tier.",
-      "premium",
-      5000
-    );
+    window.print();
   };
 
   const overallColor =
     feedback.overall >= 80
       ? "text-accent-green"
       : feedback.overall >= 60
-      ? "text-amber-400"
-      : "text-red-400";
+        ? "text-amber-400"
+        : "text-red-400";
 
   return (
     <motion.main
